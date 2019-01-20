@@ -1,46 +1,92 @@
-
-const fs = require('fs');
-
-const Right = x => ({
-  chain: f => f(x),
-  map: f => Right(f(x)),
-  fold: (f, g) => g(x),
-  inspect: () => `Right(${x})`
-});
-
-const Left = x => ({
-  chain: () => Left(x),
-  map: () => Left(x),
-  fold: (f, g) => f(x),
-  inpspect: () => `Left(${x})`
-});
-
-const tryCatch = f => {
-  try {
-    return Right(f())
-  }catch(e){
-    return Left(e)
+// example 01
+const openSite = () => {
+  if(current_user) {
+      return renderPage(current_user)
+  } else {
+      return showLogin()
   }
 }
-const fromNullable = x =>
-  x != null ? Right(x) : Left(null)
 
-// const getPort = () => {
-//   try {
-//     const str = fs.readFileSync('./config.json')
-//     const config = JSON.parse(str)
-//     return config.port
-//   } catch(e) {
-//     return 3000
-//   }
-// }
+cosnt openSite = () => 
+  fromNullable(current_user)
+  .fold(showLogin, renderPage)
 
-const getPort = () =>
-  tryCatch(() => fs.readFileSync('./config.json'))
-    .chain(c => tryCatch(() => JSON.parse(c)))
-    .fold(e => 3000,
-        c => c.port
-      )
+// example 02
+const getPrefs = user => {
+  if(user.premium) {
+      return loadPrefs(user.preferences)
+  } else {
+      return defaultPrefs
+  }
+}
 
-const result = getPort()
-console.log(result);
+const getPrefs = user =>
+  (user.premium ? Right(user) : Left('not premium'))
+  .map(u => u.preferences)
+  .fold(() => defaultPrefs, prefs => loadPrefs(prefs))
+
+// example 03
+const streetName = user => {
+  const address = user.address
+
+  if(address) {
+      const street = address.street
+
+      if(street) {
+          return street.name
+      }
+  }
+  return 'no street'
+}
+
+const streetName = user =>
+  fromNullable(user.address)
+  .chain(a => frommNullable(a.street))
+  .map(s => s.name)
+  .fold(e => 'no street', n => n)
+
+// example 04
+  const concatUniq = (x, ys) => {
+    const found = ys.filter(y => y === x)[0]
+    return found ? ys : ys.concat(x)
+}
+
+const concatUniq = (x, ys) =>
+    fromNullable(ys.filter(y => y === x)[0])
+    .fold(() => ys.concat(x), y => ys)
+
+//example 05
+const wrapExamples = example => {
+  if(example.previewPath) {
+      try {
+          example.preview = fs.readFileSync(example.previewPath)
+      } catch(e) { }
+  }
+  return example
+}
+
+const readFile = x => tryCatch(() => fs.readFileSync(x))
+
+const wrapExample = example =>
+  fromNullable(example.previewPath)
+  .chain(readFile)
+  .fold(() => example,
+        ex => Object.assign({preview: p}, ex))
+
+// example 06
+const parseDbUrl = cfg => {
+  try {
+      const c = JSON.parse(cfg)
+      if(c.url) {
+          return c.url.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/)
+      }
+  } catch(e) {
+      return null
+  }
+}
+
+const parseDbUrl = cfg =>
+  tryCatch(() => JSON.parse(cfg))
+  .chain(c => fromNullable(c.url))
+  .fold(e => null,
+        u => u.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/))
