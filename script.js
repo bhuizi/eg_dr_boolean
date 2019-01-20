@@ -9,6 +9,7 @@ const Right = x => ({
 });
 
 const Left = x => ({
+  chain: () => Left(x),
   map: () => Left(x),
   fold: (f, g) => f(x),
   inpspect: () => `Left(${x})`
@@ -36,7 +37,7 @@ const fromNullable = x =>
 
 const getPort = () =>
   tryCatch(() => fs.readFileSync('./config.json'))
-    .map(c => JSON.parse(c))
+    .chain(c => tryCatch(() => JSON.parse(c)))
     .fold(e => 3000,
         c => c.port
       )
