@@ -1,0 +1,24 @@
+{
+  "name": "dr_boolean",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhuizi/eg_dr_boolean.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhuizi/eg_dr_boolean/issues"
+  },
+  "homepage": "https://github.com/bhuizi/eg_dr_boolean#readme",
+  "dependencies": {
+    "immutable": "^4.0.0-rc.12",
+    "immutable-ext": "^1.1.5"
+  }
+}

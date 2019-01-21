@@ -1,3 +1,5 @@
+const {Map} = require('immutable-ext');
+
 const Sum = x => ({
 x,
 concat: ({x: y}) => 
@@ -5,9 +7,6 @@ concat: ({x: y}) =>
 inspect: () =>
   `Sum(${x})`
 })
-
-const res = Sum(1).concat(Sum(2))
-console.log(res);
 
 const All = x => ({
   x,
@@ -17,9 +16,6 @@ const All = x => ({
     `All(${x})`
 })
 
-const res_all = All(true).concat(All(false))
-console.log(res_all);
-
 const First = x => ({
   x,
   concat: _ => 
@@ -28,6 +24,19 @@ const First = x => ({
     `First(${x})`
 })
 
-const res_first = First('next').concat(First('ice cream'))
-console.log(res_first);
+const acc1 = Map({
+    name: First('nico'),
+    isPaid: All(true),
+    points: Sum(10),
+    friends: ['Franklin']
+})
 
+const acc2 = Map({
+    name: First('nico'),
+    isPaid: All(false),
+    points: Sum(2),
+    friends: ['Gatsby']
+})
+
+const res = acc1.concat(acc2)
+console.log(res.toJS());
