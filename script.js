@@ -24,19 +24,19 @@ const First = x => ({
     `First(${x})`
 })
 
-const acc1 = Map({
-    name: First('nico'),
-    isPaid: All(true),
-    points: Sum(10),
-    friends: ['Franklin']
-})
+Sum.empty = () => Sum(0);
 
-const acc2 = Map({
-    name: First('nico'),
-    isPaid: All(false),
-    points: Sum(2),
-    friends: ['Gatsby']
-})
+const res = Sum.empty().concat(Sum(1).concat(Sum(2)))
+console.log(res);
 
-const res = acc1.concat(acc2)
-console.log(res.toJS());
+All.empty = () => All(true);
+
+const res_all = All(true).concat(All(true).concat(All.empty()))
+console.log(res_all);
+
+const sum = xs =>
+  xs.reduce((acc, x) => acc + x, 0)
+
+const all = xs =>
+  xs.reduce((acc, x) => acc && x, true)
+
