@@ -26,17 +26,30 @@ const First = x => ({
 
 Sum.empty = () => Sum(0);
 
-const res_map = Map({
-      brian: 3,
-      sara: 5
-    })
-    .map(x => Sum(x))
-    .fold(Sum.empty())
+const Box = x => ({
+    fold: f => f(x),
+    map: f => Box(f(x)),
+    inspect: () => `Box(${x})`
+})
 
-console.log(res_map);
+const LazyBox = g => ({
+    fold: f => f(g()),
+   map: f => LazyBox(() => f(g()))
+})
 
-const res_list = List.of(1,2, 3)
-                // .map(Sum)
-                // .fold(Sum.empty())
-                .foldMap(Sum, Sum.empty())
-console.log(res_list);
+const res = Box('  64  ')
+            .map(abba => abba.trim())
+            .map(trimmed => new Number(trimmed))
+            .map(number => number + 1)
+            .map(x => String.fromCharCode(x))
+            .fold(x => x.toLowerCase())
+
+const res_lazy = LazyBox(() => '  64  ')
+    .map(abba => abba.trim())
+    .map(trimmed => new Number(trimmed))
+    .map(number => number + 1)
+    .map(x => String.fromCharCode(x))
+    .fold(x => x.toLowerCase())
+
+console.log(res);
+console.log(res_lazy)
