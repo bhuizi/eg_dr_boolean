@@ -1,4 +1,4 @@
-const {Map} = require('immutable-ext');
+const {Map, List} = require('immutable-ext');
 
 const Sum = x => ({
 x,
@@ -26,17 +26,17 @@ const First = x => ({
 
 Sum.empty = () => Sum(0);
 
-const res = Sum.empty().concat(Sum(1).concat(Sum(2)))
-console.log(res);
+const res_map = Map({
+      brian: 3,
+      sara: 5
+    })
+    .map(x => Sum(x))
+    .fold(Sum.empty())
 
-All.empty = () => All(true);
+console.log(res_map);
 
-const res_all = All(true).concat(All(true).concat(All.empty()))
-console.log(res_all);
-
-const sum = xs =>
-  xs.reduce((acc, x) => acc + x, 0)
-
-const all = xs =>
-  xs.reduce((acc, x) => acc && x, true)
-
+const res_list = List.of(1,2, 3)
+                // .map(Sum)
+                // .fold(Sum.empty())
+                .foldMap(Sum, Sum.empty())
+console.log(res_list);
