@@ -1,4 +1,6 @@
 const {Map, List} = require('immutable-ext');
+const Task = require('data.task')
+
 
 const Sum = x => ({
 x,
@@ -51,5 +53,37 @@ const res_lazy = LazyBox(() => '  64  ')
     .map(x => String.fromCharCode(x))
     .fold(x => x.toLowerCase())
 
-console.log(res);
-console.log(res_lazy)
+
+Task.of(1)
+  .fork(
+    e => console.log('err', e),
+    x => console.log('success', x)
+  )
+
+Task.of(1)
+  .map(x => x + 1)
+  .chain(x => Task.of(x + 1))
+  .fork(
+    e => console.log('err, e'),
+    x => console.log('success', x)
+  )
+
+  const launchMissiles = () =>
+    new Task((rej, res) => {
+      console.log('launch missles')
+      res('missle')
+    })
+
+launchMissiles()
+  .map(x => x + '!')
+  .fork(
+    e => console.log('err', e),
+    x => console.log('success', x)
+  )
+
+const app = launchMissiles().map(x => x + '!')
+
+app.fork(
+  e => console.log('err', e),
+  x => console.log('success', x)
+)
